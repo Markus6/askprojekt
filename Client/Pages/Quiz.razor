@@ -1,0 +1,88 @@
+﻿@page "/quiz"
+@inject IAppService service;
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+<PageTitle>Quiz</PageTitle>
+
+<div class="d-flex justify-content-center align-items-center" style="height:100vh;">
+	<div class="d-flex flex-column justify-content-evenly bg-secondary text-light rounded w-75 h-75 p-5">
+
+		@if (Glosor == null)
+		{
+			<div><h1>loading...</h1></div>
+		}
+		else
+		{
+			<h1 style="font-weight:bold;">Poäng: @points</h1>
+			<h2>@currentGlosaId/@Glosor.Count()</h2>
+
+			<div class="d-flex justify-content-evenly align-items-center m-3">
+				<div class="d-flex align-items-center m-3 bg-light border rounded justify-content-center text-dark" style="width:300px;">
+					<h2 style="font-size:30px;">@CurrentGlosa().Language2</h2>
+				</div>
+				<input type="text" style="font-size:30px" class="m-3 rounded text-dark text-center" @onchange="UpdateInput" />
+				@if (currentGlosaId < Glosor.Count())
+				{
+					<input type="submit" class="m-3 rounded text-dark" style="width:200px;font-size:30px;" value="Nästa glosa" @onclick="Validate" />
+				}
+				else
+				{
+					<input type="submit" class="m-3 rounded text-dark" style="width:200px;font-size:30px;" value="Resultat" @onclick="Validate" />
+				}
+			</div>
+		}
+	</div>
+</div>
+
+@code {
+	private List<GlosaModel>? Glosor;
+	private string input = "";
+	int currentGlosaId = 1;
+	int points = 0;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Glosor = await service.GetGlosorAsync();
+	}
+
+	private void UpdateInput(ChangeEventArgs e)
+	{
+		if (e != null)
+		{
+			input = e.Value.ToString();
+		}
+	}
+
+	private void Validate()
+	{
+		if (input == CurrentGlosa().Language1)
+		{
+			points++;
+		}
+		NextGlosa();
+	}
+
+	private GlosaModel CurrentGlosa()
+	{
+		foreach (var glosa in Glosor!)
+		{
+			if (glosa.Id==currentGlosaId)
+			{
+				return glosa;
+			}
+		}
+		return null;
+	}
+
+	private void NextGlosa()
+	{
+		if (currentGlosaId >= Glosor.Count)
+		{
+			navigationManager.NavigateTo($"/result/{points}");
+		}
+		else
+		{
+			currentGlosaId++;
+		}
+	}
+}

@@ -1,0 +1,26 @@
+﻿@page "/result"
+@page "/result/{points}"
+
+
+<div class="d-flex justify-content-center align-items-center" style="height:100vh;">
+	<div class="d-flex flex-column justify-content-evenly bg-secondary text-light rounded w-75 h-75 p-5">
+        <h1>Resultat</h1>
+        <h2>Totala poäng: @totalPoints</h2>
+        <div class="d-flex justify-content-center">
+            <NavLink class="d-flex justify-content-center align-items-center text-light text-decoration-none bg-primary rounded" style="width:200px; height:100px; font-size:20px; font-weight:bold;" href="quiz">
+                <span aria-hidden="true"></span> Starta om quiz
+            </NavLink>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? points { get; set; }
+    private string? totalPoints;
+
+    protected override void OnParametersSet()
+    {
+        totalPoints = points;
+    }
+}
